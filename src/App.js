@@ -18,10 +18,10 @@ const App = () => {
 
   useEffect(() => {
     noteService
-    .getAll()
-    .then(initialNotes => {
-      setNotes(initialNotes)
-    })
+      .getAll()
+      .then(initialNotes => {
+        setNotes(initialNotes)
+      })
   }, [])
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const App = () => {
             handlePasswordChange={({ target }) => setPassword(target.value)}
             handleSubmit={handleLogin}
           />
-          </Togglable>
+        </Togglable>
       </div>
     )
   }
@@ -63,8 +63,8 @@ const App = () => {
   const noteForm = () => (
     <div>
       <Togglable buttonLabel="new note" ref={noteFormRef}>
-      <NoteForm createNote={addNote} />
-    </Togglable>
+        <NoteForm createNote={addNote} />
+      </Togglable>
     </div>
   )
 
@@ -93,28 +93,28 @@ const App = () => {
 
   const toggleImportanceOf = (id) => {
     const note = notes.find(n => n.id === id)
-    const changedNote = {...note, important: !note.important}
+    const changedNote = { ...note, important: !note.important }
 
     noteService
-    .update(id, changedNote)
-    .then(returnedNote => {
-      setNotes(notes.map(note => note.id !== id ? note : returnedNote))
-    })
-    .catch(error => {
-      setErrorMessage(
-        `Note '${note.content}' was already removed from server`
-      )
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-      setNotes(notes.filter(n => n.id !== id))
-    })
+      .update(id, changedNote)
+      .then(returnedNote => {
+        setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+      })
+      .catch(() => {
+        setErrorMessage(
+          `Note '${note.content}' was already removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+        setNotes(notes.filter(n => n.id !== id))
+      })
 
   }
 
-  const notesToShow = showAll 
-  ? notes 
-  : notes.filter(note => note.important === true)
+  const notesToShow = showAll
+    ? notes
+    : notes.filter(note => note.important === true)
 
   return (
     <div>
@@ -137,11 +137,11 @@ const App = () => {
         </button>
       </div>
       <ul>
-        {notesToShow.map((note, i) => 
-          <Note 
-          key={i} 
-          note={note} 
-          toggleImportance={() => toggleImportanceOf(note.id)}
+        {notesToShow.map((note, i) =>
+          <Note
+            key={i}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
           />
         )}
       </ul>
