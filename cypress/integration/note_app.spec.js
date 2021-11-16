@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 describe('Note app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3001/api/testing/reset')
@@ -11,16 +10,26 @@ describe('Note app', function() {
     cy.visit('http://localhost:3000')
   })
 
+  it.only('login fails with wrong password', function() {
+    cy.contains('login').click()
+    cy.get('#username').type('llee')
+    cy.get('#password').type('wrong')
+    cy.get('#login-button').click()
+
+    cy.get('.error')
+      .should('contain', 'Wrong credentials')
+      .and('have.css', 'color', 'rgb(255, 0, 0)')
+      .and('have.css', 'border-style', 'solid')
+
+    cy.get('html').should('not.contain', 'Latrell Lee logged in')
+  })
+
   it('front page can be opened', function() {
     cy.contains('Notes')
     cy.contains('Note app, Department of Computer Science, University of Helsinki 2021')
   })
 
   it('login form can be opened', function() {
-    cy.contains('login').click()
-  })
-
-  it('user can login', function () {
     cy.contains('login').click()
     cy.get('#username').type('llee')
     cy.get('#password').type('test')
@@ -31,10 +40,7 @@ describe('Note app', function() {
 
   describe('when logged in', function() {
     beforeEach(function() {
-      cy.contains('log in').click()
-      cy.get('input:first').type('llee')
-      cy.get('input:last').type('test')
-      cy.get('#login-button').click()
+      cy.login({ username: 'llee', password: 'test' })
     })
 
     it('a new note can be created', function() {
@@ -46,9 +52,10 @@ describe('Note app', function() {
 
     describe('and a note exists', function () {
       beforeEach(function () {
-        cy.contains('new note').click()
-        cy.get('input').type('another note cypress')
-        cy.contains('save').click()
+        cy.createNote({
+          content: 'another note cypress',
+          important: false
+        })
       })
 
       it('it can be made important', function () {
